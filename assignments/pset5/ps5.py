@@ -163,7 +163,6 @@ class TitleTrigger(PhraseTrigger):
         return self.is_phrase_in(news_story.get_title())
 
 # Problem 4
-# TODO: DescriptionTrigger
 class DescriptionTrigger(PhraseTrigger):
     def evaluate(self, news_story: NewsStory):
         return self.is_phrase_in(news_story.get_description())
@@ -171,13 +170,31 @@ class DescriptionTrigger(PhraseTrigger):
 # TIME TRIGGERS
 
 # Problem 5
-# TODO: TimeTrigger
-# Constructor:
-#        Input: Time has to be in EST and in the format of "%d %b %Y %H:%M:%S".
-#        Convert time from string to a datetime before saving it as an attribute.
+class TimeTrigger(Trigger):
+    def __init__(self, time: string):
+        """
+        Convert time from string to a datetime before saving it as an attribute.
+
+        :param time: Time has to be in EST and in the format of "%d %b %Y %H:%M:%S".
+        """
+        self.trigger_time =datetime.strptime(time, "%d %b %Y %H:%M:%S")
+
 
 # Problem 6
-# TODO: BeforeTrigger and AfterTrigger
+class BeforeTrigger(TimeTrigger):
+    def evaluate(self, story: NewsStory):
+        if story.get_pubdate() < self.trigger_time:
+            return True
+        else:
+            return False
+
+class AfterTrigger(TimeTrigger):
+    def evaluate(self, story: NewsStory):
+        if story.get_pubdate() > self.trigger_time:
+            return True
+        else:
+            return False
+
 
 
 # COMPOSITE TRIGGERS
