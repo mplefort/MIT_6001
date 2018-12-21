@@ -51,14 +51,14 @@ class ProblemSet5(unittest.TestCase):
         self.ft2 = FalseTrigger()
 
     def test1TitleTrigger(self):
-        cuddly    = NewsStory('', 'The purple cows is soft and cuddly.', '', '', datetime.now())
+        cuddly    = NewsStory('', 'The purple cow is soft and cuddly.', '', '', datetime.now())
         exclaim   = NewsStory('', 'Purple!!! Cow!!!', '', '', datetime.now())
         symbols   = NewsStory('', 'purple@#$%cow', '', '', datetime.now())
         spaces    = NewsStory('', 'Did you see a purple     cow?', '', '', datetime.now())
         caps      = NewsStory('', 'The farmer owns a really PURPLE cow.', '', '', datetime.now())
         exact     = NewsStory('', 'purple cow', '', '', datetime.now())
 
-        # plural    = NewsStory('', 'Purple cows are cool!', '', '', datetime.now())
+        plural    = NewsStory('', 'Purple cows are cool!', '', '', datetime.now())
         separate  = NewsStory('', 'The purple blob over there is a cow.', '', '', datetime.now())
         brown     = NewsStory('', 'How now brown cow.', '' ,'', datetime.now())
         badorder  = NewsStory('', 'Cow!!! Purple!!!', '', '', datetime.now())
@@ -76,7 +76,7 @@ class ProblemSet5(unittest.TestCase):
             self.assertTrue(trig.evaluate(exact), "TitleTrigger failed to fire when the words in the phrase were the only words in the title.")
 
             # Removed plural test to pass. cannot parse with just string to false.
-            # self.assertFalse(trig.evaluate(plural), "TitleTrigger fired when the words in the phrase were contained within other words.")
+            self.assertFalse(trig.evaluate(plural), "TitleTrigger fired when the words in the phrase were contained within other words.")
             self.assertFalse(trig.evaluate(separate), "TitleTrigger fired when the words in the phrase were separated by other words.")
             self.assertFalse(trig.evaluate(brown), "TitleTrigger fired when only part of the phrase was found.")
             self.assertFalse(trig.evaluate(badorder), "TitleTrigger fired when the words in the phrase appeared out of order.")

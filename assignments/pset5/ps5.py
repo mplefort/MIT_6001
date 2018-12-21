@@ -147,34 +147,15 @@ class PhraseTrigger(Trigger):
         temp_phrase = phrase.split()
         phrase = ' '.join(temp_phrase)
 
+        # check if plural trigger
+        plural_trig = self.trigger_phrase + 's'
+        if plural_trig in phrase:
+            return False
+
         if self.trigger_phrase in phrase:
             return True
         else:
             return False
-
-        # ToDo: Return False if plural version of trigger_word
-        # if self.trigger_phrase not in phrase:
-        #     return False
-        #
-        # temp_phrase = phrase.split(self.trigger_phrase)
-        #
-        #
-        # # Check if trigger phrase is contained within another word. Return false, trigger should be stand alone
-        # for i, item in enumerate(temp_phrase):
-        #     if item is '':
-        #         if i is 0:
-        #             if temp_phrase[i + 1] is not '':
-        #                 return True
-        #         elif i is len(temp_phrase) - 1:
-        #             if temp_phrase[i -1] is not '':
-        #                 return True
-        #         else:
-        #             if temp_phrase[i + 1] is not '' or temp_phrase[i -1] is not '':
-        #                 return True
-        #
-        # return False
-
-
 
 # Problem 3
 class TitleTrigger(PhraseTrigger):
@@ -183,6 +164,9 @@ class TitleTrigger(PhraseTrigger):
 
 # Problem 4
 # TODO: DescriptionTrigger
+class DescriptionTrigger(PhraseTrigger):
+    def evaluate(self, news_story: NewsStory):
+        return self.is_phrase_in(news_story.get_description())
 
 # TIME TRIGGERS
 
