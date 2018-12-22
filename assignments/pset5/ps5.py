@@ -178,19 +178,27 @@ class TimeTrigger(Trigger):
         :param time: Time has to be in EST and in the format of "%d %b %Y %H:%M:%S".
         """
         self.trigger_time =datetime.strptime(time, "%d %b %Y %H:%M:%S")
+        self.trigger_time = self.trigger_time.replace(tzinfo=pytz.timezone("EST"))
+
 
 
 # Problem 6
 class BeforeTrigger(TimeTrigger):
     def evaluate(self, story: NewsStory):
-        if story.get_pubdate() < self.trigger_time:
+        storytime = story.get_pubdate()
+        storytime = storytime.replace(tzinfo=pytz.timezone("EST"))
+
+        if storytime < self.trigger_time:
             return True
         else:
             return False
 
 class AfterTrigger(TimeTrigger):
     def evaluate(self, story: NewsStory):
-        if story.get_pubdate() > self.trigger_time:
+        storytime = story.get_pubdate()
+        storytime = storytime.replace(tzinfo=pytz.timezone("EST"))
+
+        if storytime > self.trigger_time:
             return True
         else:
             return False
@@ -200,13 +208,32 @@ class AfterTrigger(TimeTrigger):
 # COMPOSITE TRIGGERS
 
 # Problem 7
-# TODO: NotTrigger
+class NotTrigger(Trigger):
+    def __init__(self, trigger: Trigger ):
+        self.trigger = trigger
+
+    def evaluate(self, story: NewsStory):
+        return not self.trigger.evaluate(story)
+
 
 # Problem 8
-# TODO: AndTrigger
+class AndTrigger(Trigger):
+    def __init__(self, trigger1: Trigger, trigger2: Trigger):
+        self.trigger1 = trigger1
+        self.trigger2 = trigger2
+
+    def evaluate(self, story: NewsStory):
+        return self.trigger1.evaluate(story) and self.trigger2.evaluate(story)
+
 
 # Problem 9
-# TODO: OrTrigger
+class OrTrigger(Trigger):
+    def __init__(self, trigger1: Trigger, trigger2: Trigger):
+        self.trigger1 = trigger1
+        self.trigger2 = trigger2
+
+    def evaluate(self, story: NewsStory):
+        return self.trigger1.evaluate(story) or self.trigger2.evaluate(story)
 
 
 #======================
@@ -220,12 +247,16 @@ def filter_stories(stories, triggerlist):
 
     Returns: a list of only the stories for which a trigger in triggerlist fires.
     """
-    # TODO: Problem 10
-    # This is a placeholder
-    # (we're just returning all the stories, with no filtering)
+
+    temp_stories = []
+    for trig in triggerlist:
+        for story in stories:
+            if trig.evaluate(story):
+                temp_stories.append(story)
+
+    stories = temp_stories
+
     return stories
-
-
 
 #======================
 # User-Specified Triggers
@@ -247,9 +278,7 @@ def read_trigger_config(filename):
         if not (len(line) == 0 or line.startswith('//')):
             lines.append(line)
 
-    # TODO: Problem 11
-    # line is the list of lines that you need to parse and for which you need
-    # to build triggers
+
 
     print(lines) # for now, print it so you see what it contains!
 
