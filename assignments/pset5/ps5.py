@@ -274,14 +274,52 @@ def read_trigger_config(filename):
     trigger_file = open(filename, 'r')
     lines = []
     for line in trigger_file:
-        line = line.rstrip()
-        if not (len(line) == 0 or line.startswith('//')):
+        line = line.rstrip() # removes whitespaces and empty lines
+        if not (len(line) == 0 or line.startswith('//')):  # removes empty lines lines with //
             lines.append(line)
 
 
+    # trigger configuration file parsing
+    trig_type_dic = ['Title', 'Description', 'Before', 'After', 'Not', 'And', 'Or']
+
+    #define trigger list
+    trigger_list = []
+    trig_dic = {}
+
+    # for line in lines:
+    for line in lines:
+        items = line.split(',')
+
+        if items[0] == 'ADD':
+            for trig in items[1:]:
+                trigger_list.append(trig_dic[trig])
+
+        else:
+            if items[1] == 'TITLE':
+                trig_dic[items[0]] = TitleTrigger(items[2])
+
+
+            elif items[1] == 'DESCRIPTION':
+                trig_dic[items[0]] = DescriptionTrigger(items[2])
+
+            elif items[1] == 'BEFORE':
+                trig_dic[items[0]] = BeforeTrigger(items[2])
+
+            elif items[1] == 'AFTER':
+                trig_dic[items[0]] = AfterTrigger(items[2])
+
+            elif items[1] == 'NOT':
+                trig_dic[items[0]] = NotTrigger(trig_doc[items[2]])
+
+            elif items[1] == 'AND':
+                trig_dic[items[0]] = AndTrigger(trig_dic[items[2]], trig_dic[items[3]])
+
+            elif items[1] == 'OR':
+                trig_dic[items[0]] = OrTrigger(trig_dic[items[2]], trig_dic[items[3]])
 
     print(lines) # for now, print it so you see what it contains!
 
+    return trigger_list
 
 
 SLEEPTIME = 120 #seconds -- how often we poll
@@ -290,16 +328,14 @@ def main_thread(master):
     # A sample trigger list - you might need to change the phrases to correspond
     # to what is currently in the news
     try:
-        t1 = TitleTrigger("election")
-        t2 = DescriptionTrigger("Trump")
-        t3 = DescriptionTrigger("Clinton")
-        t4 = AndTrigger(t2, t3)
-        triggerlist = [t1, t4]
+        t1 = TitleTrigger("Trump")
+
+        # triggerlist = [t1]
 
         # Problem 11
         # TODO: After implementing read_trigger_config, uncomment this line 
-        # triggerlist = read_trigger_config('triggers.txt')
-        
+        triggerlist = read_trigger_config('triggers.txt')
+
         # HELPER CODE - you don't need to understand this!
         # Draws the popup window that displays the filtered stories
         # Retrieves and filters the stories from the RSS feeds
@@ -347,6 +383,7 @@ def main_thread(master):
 
     except Exception as e:
         print(e)
+        print('error found')
 
 
 if __name__ == '__main__':
